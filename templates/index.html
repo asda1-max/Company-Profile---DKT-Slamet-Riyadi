@@ -1,101 +1,10 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
-    <style type="text/tailwindcss">
-        @theme {
-            --color-army-900: #0a0f0d;
-            --color-army-800: #14532d;
-            --color-army-700: #15803d;
-            --color-gold-500: #eab308;
-        }
-        
-        /* Base Animation Classes */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
-        }
-        
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+{% extends "base.html" %}
 
-        .reveal-left {
-            opacity: 0;
-            transform: translateX(-50px);
-            transition: all 0.8s ease-out;
-        }
-        
-        .reveal-right {
-            opacity: 0;
-            transform: translateX(50px);
-            transition: all 0.8s ease-out;
-        }
-        
-        .reveal-left.active, .reveal-right.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* Hero Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideInLeft { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideInRight { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes pulse-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-
-        .fade-in { animation: fadeIn 1.5s ease-out forwards; }
-        .slide-in-left { animation: slideInLeft 1s ease-out forwards; }
-        .slide-in-right { animation: slideInRight 1s ease-out forwards; }
-        .animate-pulse-soft { animation: pulse-soft 2s infinite; }
-    </style>
-</head>
-<body class="bg-gray-900 text-gray-300 font-sans selection:bg-green-800 selection:text-white">
-
-    <div class="relative bg-[url(https://rsslametriyadi.co.id/website-test/assets/upload/image/Profil.png)] bg-fixed bg-no-repeat bg-cover min-h-screen flex flex-col justify-between">
-        
+{% block content %}
+    <div class="relative bg-[url(https://rsslametriyadi.co.id/website-test/assets/upload/image/Profil.png)] bg-fixed bg-no-repeat bg-cover min-h-screen flex flex-col justify-center">
         <div class="absolute inset-0 bg-gray-900/85"></div>
-
-        <header class="absolute inset-x-0 top-0 z-20">
-            <nav aria-label="Global" class="flex items-center justify-between p-6 lg:px-8">
-                <div class="flex lg:flex-1">
-                    <a href="#" class="-m-1.5 p-1.5 flex items-center gap-3">
-                        <img src="https://rsslametriyadi.co.id/asset/logo/1_SLAMET_RIYADI_ARMY_HOSPITAL_(1).png" alt="" class="h-12 w-auto" />
-                        <div class="flex flex-col">
-                            <span class="text-white font-bold tracking-wider uppercase text-sm leading-tight">RST Slamet Riyadi</span>
-                            <span class="text-green-500 text-xs font-semibold tracking-widest">SURAKARTA</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="flex lg:hidden">
-                    <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-200 hover:bg-gray-800">
-                        <span class="sr-only">Open main menu</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-6">
-                            <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="hidden lg:flex lg:gap-x-12">
-                    <a href="#about" class="text-sm/6 font-semibold text-white hover:text-green-400 transition">Tentang Kami</a>
-                    <a href="#visimisi" class="text-sm/6 font-semibold text-white hover:text-green-400 transition">Visi Misi</a>
-                    <a href="#layanan" class="text-sm/6 font-semibold text-white hover:text-green-400 transition">Layanan</a>
-                    <a href="#kontak" class="text-sm/6 font-semibold text-white hover:text-green-400 transition">Kontak</a>
-                </div>
-                <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <a href="#" class="text-sm/6 font-semibold text-white border border-green-600 px-5 py-2 rounded-full hover:bg-green-800 hover:border-green-800 transition shadow-lg shadow-green-900/20">Login Staff &rarr;</a>
-                </div>
-            </nav>
-        </header>
-
-        <div class="relative isolate px-6 pt-24 lg:px-8 flex-grow flex items-center justify-center z-10">
-            <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-                <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#e59935] to-[#05c02a] opacity-20 sm:left-[calc(50%-30rem)] sm:w-288.75"></div>
-            </div>
-            
+        
+        <div class="relative isolate px-6 pt-14 lg:px-8 flex-grow flex items-center justify-center z-10">
             <div class="mx-auto max-w-3xl text-center">
                 <div class="hidden sm:mb-8 sm:flex sm:justify-center fade-in">
                     <div class="relative rounded-full px-4 py-1.5 text-sm/6 text-gray-300 ring-1 ring-white/20 bg-white/5 hover:bg-white/10 transition duration-300 backdrop-blur-sm">
@@ -112,39 +21,26 @@
                         "Menjadi Rumah Sakit Kebanggaan Prajurit dan Pilihan Masyarakat dengan Standar Pelayanan Paripurna"
                     </p>
                     
-                    <div class="mt-8 flex items-center justify-center gap-x-6 fade-in" style="animation-delay: 0.5s;">
-                        <a href="#about" class="rounded-full bg-green-700 px-8 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-green-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition transform hover:scale-105 border-b-4 border-green-900 active:border-b-0 active:translate-y-1">
+                    <div class="mt-8 flex flex-wrap items-center justify-center gap-4 fade-in" style="animation-delay: 0.5s;">
+                        <a href="#about" class="rounded-full bg-green-700 px-8 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-green-600 transition transform hover:scale-105 border-b-4 border-green-900 active:border-b-0 active:translate-y-1">
                             Profil Rumah Sakit
+                        </a>
+                        <a href="{{ url_for('berita_acara') }}" class="rounded-full bg-gray-700 px-8 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-gray-600 transition transform hover:scale-105 border-b-4 border-gray-900 active:border-b-0 active:translate-y-1">
+                            Berita & Kegiatan
                         </a>
                         <a href="#layanan" class="group text-sm/6 font-semibold text-white hover:text-green-400 transition flex items-center gap-2">
                             Layanan Unggulan <span aria-hidden="true" class="group-hover:translate-x-1 transition">→</span>
                         </a>
                     </div>
-
+                    
                     <div class="mt-12 pt-8 border-t border-white/10 fade-in" style="animation-delay: 0.8s;">
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Dipercaya Oleh Masyarakat & Institusi</p>
-                        
                         <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-70 grayscale hover:grayscale-0 transition duration-500">
                             <div class="flex items-center gap-2 font-bold text-white text-xl"><span class="text-green-500 text-3xl">❖</span> BPJS</div>
                             <div class="flex items-center gap-2 font-bold text-white text-xl"><span class="text-yellow-500 text-3xl">★</span> TNI AD</div>
                             <div class="flex items-center gap-2 font-bold text-white text-xl"><span class="text-blue-500 text-3xl">✚</span> KEMENKES</div>
-                            <div class="flex items-center gap-2 font-bold text-white text-xl"><span class="text-red-500 text-3xl">❤</span> JASA RAHARJA</div>
-                        </div>
-
-                        <div class="mt-6 flex items-center justify-center gap-4">
-                            <div class="flex -space-x-3">
-                                <img class="inline-block h-10 w-10 rounded-full ring-2 ring-gray-900" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64" alt=""/>
-                                <img class="inline-block h-10 w-10 rounded-full ring-2 ring-gray-900" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&h=64" alt=""/>
-                                <img class="inline-block h-10 w-10 rounded-full ring-2 ring-gray-900" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64" alt=""/>
-                                <div class="inline-block h-10 w-10 rounded-full ring-2 ring-gray-900 bg-gray-700 flex items-center justify-center text-xs font-bold text-white">+2k</div>
-                            </div>
-                            <div class="text-left">
-                                <div class="flex text-yellow-500 text-xs">★★★★★</div>
-                                <p class="text-xs text-gray-400">Kepuasan Pasien <span class="font-bold text-white">4.9/5.0</span></p>
-                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -168,12 +64,8 @@
                         Dedikasi Tanpa Batas Untuk <span class="text-green-600">Negeri</span>
                     </h2>
                     <p class="text-gray-400 mb-4 leading-relaxed text-justify">
-                        Rumah Sakit Tentara (RST) Slamet Riyadi Surakarta adalah wujud nyata pengabdian TNI AD dalam memberikan pelayanan kesehatan terbaik. Berdiri kokoh dengan sejarah panjang, kami tidak hanya melayani prajurit, tetapi juga masyarakat umum dengan standar profesionalisme militer.
+                        Rumah Sakit Tentara (RST) Slamet Riyadi Surakarta adalah wujud nyata pengabdian TNI AD dalam memberikan pelayanan kesehatan terbaik.
                     </p>
-                    <p class="text-gray-400 mb-8 leading-relaxed text-justify">
-                        Mengedepankan kedisiplinan, kecepatan, dan ketepatan diagnosa, kami terus berinovasi dengan teknologi medis terkini untuk menjamin keselamatan dan kenyamanan pasien.
-                    </p>
-                    
                     <div class="grid grid-cols-2 gap-6 border-t border-gray-800 pt-8">
                         <div>
                             <p class="text-4xl font-bold text-white">50+</p>
@@ -185,24 +77,9 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="reveal-right relative order-1 lg:order-2">
                     <div class="absolute -inset-4 bg-green-600/20 blur-3xl rounded-full opacity-30"></div>
-                    <img src="https://images.unsplash.com/photo-1516549655169-df83a092dd14?q=80&w=2070&auto=format&fit=crop" alt="Tim Medis" class="relative rounded-2xl shadow-2xl border border-gray-800 grayscale hover:grayscale-0 transition duration-700 ease-in-out object-cover h-[500px] w-full transform hover:scale-[1.02]">
-                    
-                    <div class="absolute bottom-10 -left-10 bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-700 hidden md:block animate-pulse-soft">
-                        <div class="flex items-center gap-3">
-                            <div class="h-10 w-10 bg-green-600 rounded-full flex items-center justify-center text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-white font-bold">Terakreditasi Paripurna</p>
-                                <p class="text-xs text-gray-400">KARS / Standar Nasional</p>
-                            </div>
-                        </div>
-                    </div>
+                    <img src="https://images.unsplash.com/photo-1516549655169-df83a092dd14?q=80&w=2070&auto=format&fit=crop" alt="Tim Medis" class="relative rounded-2xl shadow-2xl border border-gray-800 grayscale hover:grayscale-0 transition duration-700 h-[400px] w-full object-cover">
                 </div>
             </div>
         </div>
@@ -210,65 +87,28 @@
 
     <section id="visimisi" class="py-24 bg-gray-800 relative">
         <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#14532d_1px,transparent_1px)] [background-size:20px_20px]"></div>
-        
         <div class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
             <div class="text-center max-w-2xl mx-auto mb-16 reveal">
                 <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Visi & Misi</h2>
                 <div class="w-20 h-1 bg-green-600 mx-auto mt-4 rounded-full"></div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="col-span-1 md:col-span-3 lg:col-span-1 reveal-left">
                     <div class="h-full bg-gradient-to-br from-green-900 to-gray-900 rounded-2xl p-8 border border-green-700 shadow-2xl relative overflow-hidden group hover:shadow-green-900/50 transition duration-500">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition transform group-hover:rotate-12">
-                            <svg class="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                            <span class="p-2 bg-green-600 rounded-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></span> 
-                            Visi Utama
-                        </h3>
+                         <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">Visi Utama</h3>
                         <p class="text-gray-200 italic text-lg leading-relaxed font-light">
                             "Menjadi Rumah Sakit rujukan utama yang profesional, modern, dan dicintai oleh Prajurit TNI serta Masyarakat Umum."
                         </p>
                     </div>
                 </div>
-
                 <div class="col-span-1 md:col-span-3 lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 reveal-right">
-                    <div class="bg-gray-900/80 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition duration-300 group">
-                        <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-full bg-gray-800 text-green-500 flex items-center justify-center font-bold border border-gray-600 group-hover:bg-green-600 group-hover:text-white transition">1</div>
-                            <div>
-                                <h4 class="text-white font-semibold mb-1">Pelayanan Prima</h4>
-                                <p class="text-sm text-gray-400">Dukungan kesehatan handal bagi prajurit dan PNS TNI.</p>
-                            </div>
-                        </div>
+                    <div class="bg-gray-900/80 p-6 rounded-xl border border-gray-700">
+                        <h4 class="text-white font-semibold mb-1">1. Pelayanan Prima</h4>
+                        <p class="text-sm text-gray-400">Dukungan kesehatan handal bagi prajurit dan PNS TNI.</p>
                     </div>
-                    <div class="bg-gray-900/80 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition duration-300 group">
-                        <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-full bg-gray-800 text-green-500 flex items-center justify-center font-bold border border-gray-600 group-hover:bg-green-600 group-hover:text-white transition">2</div>
-                            <div>
-                                <h4 class="text-white font-semibold mb-1">Profesionalisme SDM</h4>
-                                <p class="text-sm text-gray-400">Peningkatan kompetensi medis berbasis teknologi.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-900/80 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition duration-300 group">
-                        <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-full bg-gray-800 text-green-500 flex items-center justify-center font-bold border border-gray-600 group-hover:bg-green-600 group-hover:text-white transition">3</div>
-                            <div>
-                                <h4 class="text-white font-semibold mb-1">Fasilitas Modern</h4>
-                                <p class="text-sm text-gray-400">Sarana prasarana medis yang canggih dan memadai.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-900/80 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition duration-300 group">
-                        <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-full bg-gray-800 text-green-500 flex items-center justify-center font-bold border border-gray-600 group-hover:bg-green-600 group-hover:text-white transition">4</div>
-                            <div>
-                                <h4 class="text-white font-semibold mb-1">Sosial Kemanusiaan</h4>
-                                <p class="text-sm text-gray-400">Aktif dalam penanggulangan bencana & bakti sosial.</p>
-                            </div>
-                        </div>
+                    <div class="bg-gray-900/80 p-6 rounded-xl border border-gray-700">
+                        <h4 class="text-white font-semibold mb-1">2. Profesionalisme SDM</h4>
+                        <p class="text-sm text-gray-400">Peningkatan kompetensi medis berbasis teknologi.</p>
                     </div>
                 </div>
             </div>
@@ -282,151 +122,25 @@
                     <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Fasilitas & Layanan</h2>
                     <p class="mt-2 text-gray-400">Didukung peralatan medis modern dan tenaga ahli.</p>
                 </div>
-                <a href="#" class="mt-4 md:mt-0 px-4 py-2 border border-green-600 rounded text-green-500 font-semibold hover:bg-green-600 hover:text-white transition flex items-center gap-2 text-sm">
-                    Lihat Selengkapnya <span aria-hidden="true">→</span>
-                </a>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="group relative overflow-hidden rounded-2xl bg-gray-800 reveal hover:-translate-y-2 transition duration-300 shadow-lg" style="transition-delay: 100ms;">
-                    <div class="absolute inset-0 bg-green-600/5 group-hover:bg-green-600/10 transition duration-500"></div>
-                    <div class="p-8">
-                        <div class="bg-gray-900 w-14 h-14 rounded-xl flex items-center justify-center mb-6 text-green-500 border border-gray-700 group-hover:border-green-500 transition duration-300 shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition">IGD 24 Jam</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Penanganan gawat darurat dengan respon cepat tim medis terlatih.</p>
-                    </div>
+                <div class="group rounded-2xl bg-gray-800 p-8 reveal border border-gray-700 hover:border-green-600 transition">
+                    <h3 class="text-xl font-bold text-white mb-2">IGD 24 Jam</h3>
+                    <p class="text-gray-400 text-sm">Penanganan gawat darurat dengan respon cepat.</p>
                 </div>
-
-                <div class="group relative overflow-hidden rounded-2xl bg-gray-800 reveal hover:-translate-y-2 transition duration-300 shadow-lg" style="transition-delay: 200ms;">
-                    <div class="absolute inset-0 bg-green-600/5 group-hover:bg-green-600/10 transition duration-500"></div>
-                    <div class="p-8">
-                        <div class="bg-gray-900 w-14 h-14 rounded-xl flex items-center justify-center mb-6 text-green-500 border border-gray-700 group-hover:border-green-500 transition duration-300 shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3.25a3 3 0 00-3-3h-3.12a3 3 0 00-3 3v.75a3 3 0 003 3h3.12a3 3 0 003-3v-.75z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition">Rawat Inap VIP</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Kenyamanan perawatan dengan fasilitas kamar setara hotel berbintang.</p>
-                    </div>
+                 <div class="group rounded-2xl bg-gray-800 p-8 reveal border border-gray-700 hover:border-green-600 transition">
+                    <h3 class="text-xl font-bold text-white mb-2">Rawat Inap VIP</h3>
+                    <p class="text-gray-400 text-sm">Fasilitas kamar setara hotel berbintang.</p>
                 </div>
-
-                <div class="group relative overflow-hidden rounded-2xl bg-gray-800 reveal hover:-translate-y-2 transition duration-300 shadow-lg" style="transition-delay: 300ms;">
-                    <div class="absolute inset-0 bg-green-600/5 group-hover:bg-green-600/10 transition duration-500"></div>
-                    <div class="p-8">
-                        <div class="bg-gray-900 w-14 h-14 rounded-xl flex items-center justify-center mb-6 text-green-500 border border-gray-700 group-hover:border-green-500 transition duration-300 shadow-lg">
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition">Medical Checkup</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Paket pemeriksaan kesehatan menyeluruh untuk prajurit dan umum.</p>
-                    </div>
+                 <div class="group rounded-2xl bg-gray-800 p-8 reveal border border-gray-700 hover:border-green-600 transition">
+                    <h3 class="text-xl font-bold text-white mb-2">Medical Checkup</h3>
+                    <p class="text-gray-400 text-sm">Pemeriksaan kesehatan menyeluruh.</p>
                 </div>
-
-                <div class="group relative overflow-hidden rounded-2xl bg-gray-800 reveal hover:-translate-y-2 transition duration-300 shadow-lg" style="transition-delay: 400ms;">
-                    <div class="absolute inset-0 bg-green-600/5 group-hover:bg-green-600/10 transition duration-500"></div>
-                    <div class="p-8">
-                        <div class="bg-gray-900 w-14 h-14 rounded-xl flex items-center justify-center mb-6 text-green-500 border border-gray-700 group-hover:border-green-500 transition duration-300 shadow-lg">
-                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition">Bedah Sentral</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Ruang operasi steril dengan teknologi mutakhir dan dokter spesialis bedah.</p>
-                    </div>
+                 <div class="group rounded-2xl bg-gray-800 p-8 reveal border border-gray-700 hover:border-green-600 transition">
+                    <h3 class="text-xl font-bold text-white mb-2">Bedah Sentral</h3>
+                    <p class="text-gray-400 text-sm">Ruang operasi steril teknologi mutakhir.</p>
                 </div>
             </div>
         </div>
     </section>
-
-    <footer id="kontak" class="bg-black border-t border-gray-800 pt-16 pb-8">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <div class="col-span-1 lg:col-span-1">
-                    <img src="https://rsslametriyadi.co.id/website-test/assets/upload/image/1_SLAMET%20RIYADI%20ARMY%20HOSPITAL.png" alt="" class="h-14 w-auto mb-6" />
-                    <p class="text-gray-500 text-sm leading-relaxed">
-                        Rumah Sakit Tentara Tk.III Slamet Riyadi. <br>
-                        Melayani dengan Hati, Disiplin, dan Dedikasi.
-                    </p>
-                </div>
-
-                <div>
-                    <h3 class="text-white font-bold mb-4">Navigasi</h3>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li><a href="#about" class="hover:text-green-500 transition">Profil</a></li>
-                        <li><a href="#layanan" class="hover:text-green-500 transition">Jadwal Dokter</a></li>
-                        <li><a href="#" class="hover:text-green-500 transition">Daftar Online</a></li>
-                        <li><a href="#" class="hover:text-green-500 transition">Karir</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-white font-bold mb-4">Hubungi Kami</h3>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            Jl. Brigjend Slamet Riyadi No. 321, Surakarta
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            (0271) 714656
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="rounded-lg overflow-hidden h-40 bg-gray-800 relative border border-gray-700">
-                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.148816828454!2d110.8096238153325!3d-7.567083894541768!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a167d30560f61%3A0x6b4461623842c162!2sRumah%20Sakit%20Slamet%20Riyadi!5e0!3m2!1sen!2sid!4v1645498273652!5m2!1sen!2sid" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="opacity-60 hover:opacity-100 transition duration-500"></iframe>
-                </div>
-            </div>
-
-            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-xs text-gray-600">© 2026 RST Slamet Riyadi. All rights reserved.</p>
-                <div class="flex gap-4 mt-4 md:mt-0">
-                    <a href="#" class="text-gray-500 hover:text-white transition"><span class="sr-only">Facebook</span>FB</a>
-                    <a href="#" class="text-gray-500 hover:text-white transition"><span class="sr-only">Instagram</span>IG</a>
-                    <a href="#" class="text-gray-500 hover:text-white transition"><span class="sr-only">Twitter</span>TW</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div class="fixed bottom-6 right-6 z-50">
-        <button onclick="alert('Halo! Ada yang bisa kami bantu? (Simulasi Chatbot)')" class="group relative flex items-center justify-center w-16 h-16 bg-green-600 rounded-full shadow-2xl hover:bg-green-500 transition duration-300 animate-bounce hover:animate-none">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-8 text-white">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-            </svg>
-            
-            <span class="absolute right-full mr-4 bg-white text-gray-900 text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition duration-300 shadow-lg">
-                Buka Chat Bot
-                <span class="absolute right-[-6px] top-1/2 -translate-y-1/2 border-y-4 border-y-transparent border-l-6 border-l-white"></span>
-            </span>
-            
-            <span class="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-500 border-2 border-gray-900"></span>
-        </button>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, observerOptions);
-
-            const animatedElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-            animatedElements.forEach(el => observer.observe(el));
-        });
-    </script>
-</body>
-</html>
+{% endblock %}
