@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ berita.judul }}{% endblock %}
+
+{% block content %}
+<div class="pt-32 pb-16 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <a href="{{ url_for('berita_acara') }}" class="inline-flex items-center text-sm text-gray-500 hover:text-green-600 mb-6 transition">
+            &larr; Kembali ke Berita
+        </a>
+
+        <article class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 reveal">
+            <img src="{{ berita.gambar }}" alt="{{ berita.judul }}" class="w-full h-64 md:h-96 object-cover">
+            <div class="p-8">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ berita.judul }}</h1>
+                <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-8 border-b border-gray-100 dark:border-gray-700 pb-4">
+                    <time>{{ berita.tanggal.strftime('%d %B %Y') }}</time>
+                    <span>&bull;</span>
+                    <span>Admin RST</span>
+                </div>
+                <div class="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                    {{ berita.konten }}
+                </div>
+            </div>
+        </article>
+
+        <div class="mt-12 reveal">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Komentar ({{ berita.komentar|length }})</h3>
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 mb-8">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tulis Komentar</h4>
+                <form action="{{ url_for('detail_berita', id=berita.id) }}" method="POST">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Anda</label>
+                        <input type="text" name="nama" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Isi Komentar</label>
+                        <textarea name="isi" rows="3" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-green-500 focus:border-green-500"></textarea>
+                    </div>
+                    <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-800 transition">Kirim Komentar</button>
+                </form>
+            </div>
+
+            <div class="space-y-4">
+                {% for komen in berita.komentar %}
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <h5 class="font-bold text-gray-900 dark:text-white">{{ komen.nama_pengirim }}</h5>
+                        <span class="text-xs text-gray-500">{{ komen.tanggal.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 text-sm">{{ komen.isi_komentar }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

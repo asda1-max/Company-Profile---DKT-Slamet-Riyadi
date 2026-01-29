@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Tambah Berita Baru{% endblock %}
+
+{% block content %}
+<div class="pt-32 pb-16 min-h-screen bg-gray-50 dark:bg-gray-900 flex justify-center items-center">
+    <div class="w-full max-w-2xl bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 reveal">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Terbitkan Berita Baru</h2>
+        
+        <form method="POST">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Berita</label>
+                <input type="text" name="judul" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL Gambar (Link)</label>
+                <input type="url" name="gambar" placeholder="https://example.com/image.jpg" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Konten Berita</label>
+                <textarea name="konten" rows="10" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500"></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition">Terbitkan Berita</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
