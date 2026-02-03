@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Tambah Video - RST Slamet Riyadi{% endblock %}
+
+{% block content %}
+<div class="pt-32 pb-16 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Tambah Video Baru</h2>
+            
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Judul Video</label>
+                    <input type="text" id="title" name="title" required 
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Deskripsi (Opsional)</label>
+                    <textarea id="description" name="description" rows="3" 
+                              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"></textarea>
+                </div>
+                
+                <div>
+                    <label for="video_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">URL Video</label>    
+                    <input type="url" id="video_url" name="video_url" required placeholder="https://www.youtube.com/watch?v=..."
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Masukkan URL YouTube, Vimeo, atau link video lainnya</p>
+                </div>
+                
+                <div>
+                    <label for="thumbnail_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">URL Thumbnail (Opsional)</label>
+                    <input type="url" id="thumbnail_url" name="thumbnail_url" placeholder="https://example.com/thumbnail.jpg"
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Jika kosong, akan menggunakan thumbnail default</p>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition font-semibold">
+                        Simpan Video
+                    </button>
+                    <a href="{{ url_for('galeri') }}" class="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-white px-6 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition font-semibold text-center">
+                        Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

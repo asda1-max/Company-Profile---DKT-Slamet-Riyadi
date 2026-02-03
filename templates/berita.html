@@ -5,6 +5,10 @@
 {% block content %}
 <div class="pt-32 pb-16 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="pt-32 pb-16 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="w-96 h-96 object-contain">
+    </div>
         <div class="text-center mb-12 reveal">
             <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Berita Acara & Kegiatan</h2>
             <div class="w-20 h-1 bg-green-600 mx-auto mt-6 rounded-full"></div>
