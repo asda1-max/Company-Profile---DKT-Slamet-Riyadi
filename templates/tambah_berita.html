@@ -7,15 +7,40 @@
     <div class="w-full max-w-2xl bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 reveal">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Terbitkan Berita Baru</h2>
         
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Berita</label>
                 <input type="text" name="judul" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
             </div>
             
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL Gambar (Link)</label>
-                <input type="url" name="gambar" placeholder="https://example.com/image.jpg" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <select name="category_id" id="category_id" class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
+                            <option value="">-- Pilih Kategori --</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" name="new_category" id="new_category" placeholder="Atau buat kategori baru..." class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pilih kategori yang ada atau buat kategori baru</p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload Gambar (Opsional)</label>
+                <input type="file" name="gambar_file" id="gambar_file" accept=".jpg,.jpeg,.png" class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format: JPG, JPEG, PNG (Max 5MB)</p>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ATAU URL Gambar</label>
+                <input type="url" name="gambar_url" id="gambar_url" placeholder="https://example.com/image.jpg" class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-2.5 focus:ring-green-500 focus:border-green-500">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Masukkan URL jika tidak upload file</p>
             </div>
 
             <div class="mb-6">
@@ -27,4 +52,57 @@
         </form>
     </div>
 </div>
+
+<script>
+    // Mutual exclusion: disable URL when file is selected, disable file when URL is typed
+    const fileInput = document.getElementById('gambar_file');
+    const urlInput = document.getElementById('gambar_url');
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            urlInput.disabled = true;
+            urlInput.classList.add('opacity-50', 'cursor-not-allowed');
+            urlInput.value = '';
+        } else {
+            urlInput.disabled = false;
+            urlInput.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+
+    urlInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            fileInput.disabled = true;
+            fileInput.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            fileInput.disabled = false;
+            fileInput.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+
+    // Category selection mutual exclusion
+    const categorySelect = document.getElementById('category_id');
+    const newCategoryInput = document.getElementById('new_category');
+
+    categorySelect.addEventListener('change', function() {
+        if (this.value !== '') {
+            newCategoryInput.disabled = true;
+            newCategoryInput.classList.add('opacity-50', 'cursor-not-allowed');
+            newCategoryInput.value = '';
+        } else {
+            newCategoryInput.disabled = false;
+            newCategoryInput.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+
+    newCategoryInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            categorySelect.disabled = true;
+            categorySelect.classList.add('opacity-50', 'cursor-not-allowed');
+            categorySelect.value = '';
+        } else {
+            categorySelect.disabled = false;
+            categorySelect.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+</script>
 {% endblock %}

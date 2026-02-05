@@ -10,7 +10,13 @@
         </a>
 
         <article class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 reveal">
-            <img src="{{ berita.gambar }}" alt="{{ berita.judul }}" class="w-full h-64 md:h-96 object-cover">
+            {% if berita.gambar %}
+                {% if berita.gambar.startswith('http') %}
+                <img src="{{ berita.gambar }}" alt="{{ berita.judul }}" class="w-full h-64 md:h-96 object-cover">
+                {% else %}
+                <img src="{{ url_for('static', filename=berita.gambar) }}" alt="{{ berita.judul }}" class="w-full h-64 md:h-96 object-cover">
+                {% endif %}
+            {% endif %}
             <div class="p-8">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ berita.judul }}</h1>
                 <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-8 border-b border-gray-100 dark:border-gray-700 pb-4">

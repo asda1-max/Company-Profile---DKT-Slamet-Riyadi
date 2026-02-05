@@ -128,9 +128,20 @@
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
                 <div>
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Fasilitas & Layanan</h2>
-                    <p class="mt-2 text-gray-600 dark:text-gray-400">Didukung peralatan medis modern dan tenaga ahli.</p>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Fasilitas & Layanan Unggulan</h2>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">Didukung peralatan medis modern serta tenaga yang ahli.</p>
                 </div>
+                {% if fasilitas_gallery_id %}
+                <a href="{{ url_for('detail_galeri', id=fasilitas_gallery_id) }}" class="mt-4 md:mt-0 inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Fasilitas
+                </a>
+                {% else %}
+                <a href="{{ url_for('galeri') }}" class="mt-4 md:mt-0 inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Fasilitas
+                </a>
+                {% endif %}
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -138,16 +149,16 @@
                     <div class="w-12 h-12 bg-green-100 dark:bg-gray-900 rounded-lg flex items-center justify-center text-green-600 mb-6">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">IGD 24 Jam</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Penanganan gawat darurat dengan respon cepat tim medis.</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Immunotherapy Nusantara by Terawan</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Immunoterapi sel Dendritik yang bekerja bersama-sama untuk membantu mengobati pasien dengan berdasar pada konsep imunoterapi seluler untuk penyakit yang melibatkan sistem kekebalan tubuh.</p>
                 </div>
                 
                 <div class="group rounded-2xl bg-white dark:bg-gray-800 p-8 reveal border border-gray-100 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-600 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div class="w-12 h-12 bg-green-100 dark:bg-gray-900 rounded-lg flex items-center justify-center text-green-600 mb-6">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Rawat Inap VIP</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Fasilitas kamar setara hotel berbintang untuk kenyamanan.</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Digital Subtraction Angiography (DSA)</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">(DSA) adalah teknik fluoroskopi yang digunakan secara luas dalam radiologi intervensi. Prosedur ini bertujuan mendapatkan gambaran pembuluh darah.</p>
                 </div>
 
                 <div class="group rounded-2xl bg-white dark:bg-gray-800 p-8 reveal border border-gray-100 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-600 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -155,15 +166,15 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Medical Checkup</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Paket pemeriksaan kesehatan menyeluruh dan akurat.</p>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Medical check up adalah pemeriksaan kesehatan secara menyeluruh. Melalui pemeriksaan ini, diharapkan gangguan kesehatan tertentu bisa terdeteksi sejak dini.</p>
                 </div>
 
                 <div class="group rounded-2xl bg-white dark:bg-gray-800 p-8 reveal border border-gray-100 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-600 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div class="w-12 h-12 bg-green-100 dark:bg-gray-900 rounded-lg flex items-center justify-center text-green-600 mb-6">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Bedah Sentral</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Ruang operasi steril dengan teknologi mutakhir.</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Eudherma Aesthetic Clinic</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Eudora Aesthetic Clinic adalah klinik estetika yang fokus pada perawatan kecantikan dan kesehatan kulit, wajah, tubuh, serta rambut.</p>
                 </div>
             </div>
         </div>

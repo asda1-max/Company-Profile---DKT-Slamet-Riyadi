@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Permintaan Janji Temu - RST Slamet Riyadi{% endblock %}
+
+{% block content %}
+<div class="pt-32 pb-16 min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="w-96 h-96 object-contain">
+        </div>
+        
+        <div class="mb-8 reveal">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Permintaan Janji Temu</h2>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">Kelola dan pantau semua permintaan janji temu pasien</p>
+            <div class="w-20 h-1 bg-green-600 mt-4 rounded-full"></div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 reveal">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-yellow-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ janji_list|selectattr('status', 'equalto', 'Menunggu Konfirmasi')|list|length }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Menunggu</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-green-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ janji_list|selectattr('status', 'equalto', 'Dikonfirmasi')|list|length }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Dikonfirmasi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-blue-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ janji_list|length }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Permintaan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments List -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden reveal">
+            {% if janji_list %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-4">No. Reg</th>
+                            <th scope="col" class="px-6 py-4">Nama Pasien</th>
+                            <th scope="col" class="px-6 py-4">No. HP</th>
+                            <th scope="col" class="px-6 py-4">Dokter</th>
+                            <th scope="col" class="px-6 py-4">Tanggal</th>
+                            <th scope="col" class="px-6 py-4">Keluhan</th>
+                            <th scope="col" class="px-6 py-4">Status</th>
+                            <th scope="col" class="px-6 py-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for janji in janji_list %}
+                        <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">#{{ janji.id }}</td>
+                            <td class="px-6 py-4 text-gray-900 dark:text-white font-semibold">{{ janji.nama_pasien }}</td>
+                            <td class="px-6 py-4 text-gray-600 dark:text-gray-400">{{ janji.no_hp }}</td>
+                            <td class="px-6 py-4">
+                                <div class="text-gray-900 dark:text-white font-medium">{{ janji.dokter.nama }}</div>
+                                <div class="text-xs text-green-600 dark:text-green-400">{{ janji.dokter.spesialis }}</div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600 dark:text-gray-400">{{ janji.tanggal_rencana }}</td>
+                            <td class="px-6 py-4 text-gray-600 dark:text-gray-400 max-w-xs truncate">{{ janji.keluhan }}</td>
+                            <td class="px-6 py-4">
+                                {% if janji.status == 'Menunggu Konfirmasi' %}
+                                <span class="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2.5 py-1 text-xs font-medium text-yellow-800 dark:text-yellow-400">
+                                    Menunggu
+                                </span>
+                                {% elif janji.status == 'Dikonfirmasi' %}
+                                <span class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2.5 py-1 text-xs font-medium text-green-800 dark:text-green-400">
+                                    Dikonfirmasi
+                                </span>
+                                {% elif janji.status == 'Dibatalkan' %}
+                                <span class="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/30 px-2.5 py-1 text-xs font-medium text-red-800 dark:text-red-400">
+                                    Dibatalkan
+                                </span>
+                                {% elif janji.status == 'Selesai' %}
+                                <span class="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2.5 py-1 text-xs font-medium text-blue-800 dark:text-blue-400">
+                                    Selesai
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-center gap-2">
+                                    {% if janji.status == 'Menunggu Konfirmasi' %}
+                                    <a href="{{ url_for('update_status_janji', id=janji.id, status='Dikonfirmasi') }}" class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition" title="Konfirmasi">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </a>
+                                    <a href="{{ url_for('update_status_janji', id=janji.id, status='Dibatalkan') }}" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition" title="Batalkan">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </a>
+                                    {% elif janji.status == 'Dikonfirmasi' %}
+                                    <a href="{{ url_for('update_status_janji', id=janji.id, status='Selesai') }}" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition" title="Tandai Selesai">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
+                                        </svg>
+                                    </a>
+                                    {% else %}
+                                    <span class="text-gray-400 text-xs">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="p-12 text-center">
+                <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <p class="text-gray-500 dark:text-gray-400">Belum ada permintaan janji temu</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

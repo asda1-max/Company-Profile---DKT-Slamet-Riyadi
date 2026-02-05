@@ -14,25 +14,91 @@
             <div class="w-20 h-1 bg-green-600 mx-auto mt-6 rounded-full"></div>
             
             {% if current_user.is_authenticated %}
-            <div class="mt-8">
+            <div class="mt-8 flex gap-3 justify-center flex-wrap">
                 <a href="{{ url_for('tambah_berita') }}" class="inline-flex items-center gap-2 rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-green-600 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                     Tambah Berita Baru
                 </a>
+                <a href="{{ url_for('manage_categories') }}" class="inline-flex items-center gap-2 rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>
+                    Kelola Kategori
+                </a>
             </div>
             {% endif %}
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="mb-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700 reveal">
+            <form method="GET" action="{{ url_for('berita_acara') }}" class="space-y-4">
+                <!-- Search Box -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cari Berita</label>
+                    <div class="relative">
+                        <input type="text" name="search" value="{{ search_query or '' }}" 
+                               placeholder="Ketik judul berita..." 
+                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white pl-10 pr-4 py-2.5 focus:ring-green-500 focus:border-green-500">
+                        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter Kategori</label>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ url_for('berita_acara') }}" 
+                           class="px-4 py-2 rounded-full text-sm font-medium transition {% if not selected_category %}bg-green-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">
+                            Semua
+                        </a>
+                        {% for cat in categories %}
+                        <a href="{{ url_for('berita_acara', category=cat.id, search=search_query or '') }}" 
+                           class="px-4 py-2 rounded-full text-sm font-medium transition {% if selected_category == cat.id %}bg-green-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">
+                            {{ cat.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="px-6 py-2 bg-green-700 text-white rounded-lg font-semibold hover:bg-green-800 transition">
+                        Cari
+                    </button>
+                    {% if search_query or selected_category %}
+                    <a href="{{ url_for('berita_acara') }}" class="px-6 py-2 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition">
+                        Reset
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for item in berita %}
             <article class="flex flex-col items-start justify-between bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl reveal transform hover:-translate-y-1 transition duration-300">
                 <div class="relative w-full h-48 overflow-hidden">
-                    <img src="{{ item.gambar }}" alt="" class="w-full h-full object-cover transition duration-500 hover:scale-110">
+                    {% if item.gambar %}
+                        {% if item.gambar.startswith('http') %}
+                        <img src="{{ item.gambar }}" alt="{{ item.judul }}" class="w-full h-full object-cover transition duration-500 hover:scale-110">
+                        {% else %}
+                        <img src="{{ url_for('static', filename=item.gambar) }}" alt="{{ item.judul }}" class="w-full h-full object-cover transition duration-500 hover:scale-110">
+                        {% endif %}
+                    {% else %}
+                    <div class="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="max-w-xl p-6 flex flex-col h-full">
-                    <div class="flex items-center gap-x-4 text-xs mb-3">
+                    <div class="flex items-center gap-x-4 text-xs mb-3 flex-wrap">
                         <time datetime="{{ item.tanggal }}" class="text-gray-500 dark:text-gray-400">{{ item.tanggal.strftime('%d %B %Y') }}</time>
-                        <span class="rounded-full bg-green-100 dark:bg-green-900/50 px-3 py-1 font-semibold text-green-700 dark:text-green-400">Berita</span>
+                        {% if item.category %}
+                        <span class="rounded-full bg-green-100 dark:bg-green-900/50 px-3 py-1 font-semibold text-green-700 dark:text-green-400">{{ item.category.name }}</span>
+                        {% else %}
+                        <span class="rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1 font-semibold text-gray-600 dark:text-gray-400">Tanpa Kategori</span>
+                        {% endif %}
                     </div>
                     <h3 class="text-lg font-bold leading-6 text-gray-900 dark:text-white mb-2">
                         <a href="{{ url_for('detail_berita', id=item.id) }}" class="hover:text-green-600 transition">{{ item.judul }}</a>

@@ -25,8 +25,30 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {% for dr in dokter %}
             <div class="group relative rounded-2xl bg-white dark:bg-gray-800 p-6 border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 shadow-lg hover:shadow-xl transition-all duration-300 reveal text-center flex flex-col items-center">
+                
+                {% if current_user.is_authenticated %}
+                <!-- Delete Button (X) at top right -->
+                <button onclick="confirmDelete({{ dr.id }}, '{{ dr.nama }}')" class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-red-600 text-white hover:bg-red-700 transition shadow-md z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                {% endif %}
+
                 <div class="aspect-square w-28 h-28 mb-4 overflow-hidden rounded-full border-4 border-green-100 dark:border-green-900 group-hover:border-green-500 transition shadow-md">
-                    <img src="{{ dr.foto }}" alt="{{ dr.nama }}" class="h-full w-full object-cover">
+                    {% if dr.foto %}
+                        {% if dr.foto.startswith('http') %}
+                        <img src="{{ dr.foto }}" alt="{{ dr.nama }}" class="h-full w-full object-cover">
+                        {% else %}
+                        <img src="{{ url_for('static', filename=dr.foto) }}" alt="{{ dr.nama }}" class="h-full w-full object-cover">
+                        {% endif %}
+                    {% else %}
+                    <div class="h-full w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                    </div>
+                    {% endif %}
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-green-600 transition">{{ dr.nama }}</h3>
                 <p class="text-sm font-semibold text-green-600 mb-4">{{ dr.spesialis }}</p>
@@ -36,12 +58,92 @@
                     <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ dr.jadwal }}</p>
                 </div>
                 
+                {% if current_user.is_authenticated %}
+                <!-- Edit Button (Green) for Admin -->
+                <a href="{{ url_for('edit_dokter', id=dr.id) }}" class="w-full mt-auto rounded-lg bg-green-600 px-4 py-2 text-sm font-bold text-white shadow hover:bg-green-700 transition">
+                    Edit Data Dokter
+                </a>
+                {% else %}
+                <!-- Buat Janji Button (Only for Users) -->
                 <a href="{{ url_for('buat_janji', dokter_id=dr.id) }}" class="w-full mt-auto rounded-lg bg-green-700 px-4 py-2 text-sm font-bold text-white shadow hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-600 transition">
                     Buat Janji
                 </a>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
+        
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 border border-gray-200 dark:border-gray-700 reveal">
+                <!-- Close button -->
+                <button onclick="closeDeleteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
+                <!-- Modal content -->
+                <div class="p-8 text-center">
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-red-600 dark:text-red-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                        </svg>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Konfirmasi Hapus</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">
+                        Apakah anda yakin ingin menghapus data dokter <span id="dokterName" class="font-semibold text-gray-900 dark:text-white"></span>?
+                    </p>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="closeDeleteModal()" class="flex-1 rounded-lg bg-gray-200 dark:bg-gray-700 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            Tidak
+                        </button>
+                        <button onclick="confirmDeleteAction()" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition shadow-lg">
+                            Ya, Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let pendingDeleteId = null;
+
+            function confirmDelete(dokterId, dokterNama) {
+                pendingDeleteId = dokterId;
+                document.getElementById('dokterName').textContent = dokterNama;
+                const modal = document.getElementById('deleteModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            function closeDeleteModal() {
+                const modal = document.getElementById('deleteModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                pendingDeleteId = null;
+            }
+
+            function confirmDeleteAction() {
+                if (pendingDeleteId) {
+                    // Create a form dynamically and submit it
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/hapus_dokter/' + pendingDeleteId;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('deleteModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeDeleteModal();
+                }
+            });
+        </script>
     </div>
 </div>
 {% endblock %}

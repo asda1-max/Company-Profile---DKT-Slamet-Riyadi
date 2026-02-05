@@ -38,14 +38,22 @@
 
         <!-- Main Image -->
         <div class="mb-12">
+            {% if gallery.main_image.startswith('http') %}
             <img src="{{ gallery.main_image }}" alt="{{ gallery.title }}" class="w-full h-96 object-cover rounded-2xl shadow-lg">
+            {% else %}
+            <img src="{{ url_for('static', filename=gallery.main_image) }}" alt="{{ gallery.title }}" class="w-full h-96 object-cover rounded-2xl shadow-lg">
+            {% endif %}
         </div>
 
         <!-- Sub Images Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for image in gallery.images %}
             <div class="group relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition duration-300">
+                {% if image.image_url.startswith('http') %}
                 <img src="{{ image.image_url }}" alt="{{ image.subtitle }}" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
+                {% else %}
+                <img src="{{ url_for('static', filename=image.image_url) }}" alt="{{ image.subtitle }}" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
+                {% endif %}
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300">
                     <div class="absolute bottom-0 left-0 right-0 p-4">
                         <p class="text-white font-semibold text-lg">{{ image.subtitle }}</p>
