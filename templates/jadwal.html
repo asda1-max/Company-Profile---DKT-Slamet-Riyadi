@@ -22,6 +22,63 @@
             {% endif %}
         </div>
 
+        <!-- Search and Filter Section -->
+        <div class="mb-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700 reveal">
+            <form method="GET" action="{{ url_for('jadwal_dokter') }}" class="space-y-4">
+                <!-- Search Box -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cari Dokter</label>
+                    <div class="relative">
+                        <input type="text" name="search" value="{{ search_query or '' }}" 
+                               placeholder="Ketik nama atau spesialisasi dokter..." 
+                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white pl-10 pr-4 py-2.5 focus:ring-green-500 focus:border-green-500">
+                        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Search Type Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cari Berdasarkan</label>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ url_for('jadwal_dokter', search_type='nama', search=search_query or '', sort_by=sort_by) }}" 
+                           class="px-4 py-2 rounded-full text-sm font-medium transition {% if search_type == 'nama' %}bg-green-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">
+                            Nama Dokter
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Specialization Category Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter Spesialisasi</label>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ url_for('jadwal_dokter', search=search_query or '', search_type=search_type) }}" 
+                           class="px-4 py-2 rounded-full text-sm font-medium transition {% if not spesialis_filter %}bg-green-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">
+                            Semua
+                        </a>
+                        {% for spec in specializations %}
+                        <a href="{{ url_for('jadwal_dokter', spesialis=spec, search=search_query or '', search_type=search_type) }}" 
+                           class="px-4 py-2 rounded-full text-sm font-medium transition {% if spesialis_filter == spec %}bg-green-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">
+                            {{ spec }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="px-6 py-2 bg-green-700 text-white rounded-lg font-semibold hover:bg-green-800 transition">
+                        Cari
+                    </button>
+                    {% if search_query or search_type != 'nama' or spesialis_filter %}
+                    <a href="{{ url_for('jadwal_dokter') }}" class="px-6 py-2 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition">
+                        Reset
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {% for dr in dokter %}
             <div class="group relative rounded-2xl bg-white dark:bg-gray-800 p-6 border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 shadow-lg hover:shadow-xl transition-all duration-300 reveal text-center flex flex-col items-center">
@@ -54,8 +111,10 @@
                 <p class="text-sm font-semibold text-green-600 mb-4">{{ dr.spesialis }}</p>
                 
                 <div class="w-full bg-gray-50 dark:bg-gray-900/50 p-3 rounded-lg border border-gray-100 dark:border-gray-700 mb-4">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Jadwal Praktik</p>
-                    <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ dr.jadwal }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Jadwal Praktik</p>
+                    <div class="space-y-1 whitespace-pre-wrap">
+                        <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ dr.jadwal }}</p>
+                    </div>
                 </div>
                 
                 {% if current_user.is_authenticated %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Admin Login{% endblock %}
+{% block content %}
+<div class="flex min-h-screen flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm reveal text-center">
+    <img class="mx-auto h-20 w-auto" src="{{ url_for('static', filename='logo.png') }}" alt="RST Slamet Riyadi">
+    <div class="flex items-center justify-center mt-6">
+      <svg class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+      </svg>
+      <h2 class="text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">Admin Login</h2>
+    </div>
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Masuk ke panel administrator</p>
+  </div>
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-sm reveal-left">
+    <form class="space-y-6 bg-white dark:bg-gray-800 p-8 shadow-lg rounded-2xl border border-gray-100 dark:border-gray-700" action="{{ url_for('admin_login') }}" method="POST">
+      <div>
+        <label for="username" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Username Admin</label>
+        <div class="mt-2">
+          <input id="username" name="username" type="text" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6 px-3">
+        </div>
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Password</label>
+        <div class="mt-2">
+          <input id="password" name="password" type="password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6 px-3">
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="flex w-full justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-600">Login sebagai Admin</button>
+      </div>
+    </form>
+    <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+      <a href="{{ url_for('login') }}" class="font-semibold text-green-600 hover:text-green-500 dark:text-green-500 dark:hover:text-green-400 transition">← Kembali ke Staff Login</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

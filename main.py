@@ -25,10 +25,16 @@ login_manager.login_view = 'login'
 
 # ================= MODELS =================
 
+class Admin(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
+    status = db.Column(db.String(50), default='pending')  # pending, approved, rejected
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -100,7 +106,24 @@ class Video(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    try:
+        user_id = int(user_id)
+    except (TypeError, ValueError):
+        return None
+    
+    # Try to load as Admin first
+    admin = db.session.get(Admin, user_id)
+    if admin:
+        admin.is_admin = True
+        return admin
+    
+    # Otherwise load as User
+    user = db.session.get(User, user_id)
+    if user:
+        user.is_admin = False
+        return user
+    
+    return None
 
 # ================= HELPER FUNCTIONS =================
 
@@ -294,8 +317,33 @@ def tambah_berita():
 
 @app.route("/jadwal_dokter")
 def jadwal_dokter():
-    daftar_dokter = Dokter.query.all()
-    return render_template("jadwal.html", dokter=daftar_dokter)
+    # Get search and specialization filter parameters
+    search_query = request.args.get('search', '').strip()
+    search_type = request.args.get('search_type', 'nama')  # 'nama' or 'spesialis'
+    spesialis_filter = request.args.get('spesialis', '').strip()  # specialization filter
+    
+    # Build query
+    query = Dokter.query
+    
+    # Apply search filter
+    if search_query:
+        if search_type == 'spesialis':
+            query = query.filter(Dokter.spesialis.ilike(f'%{search_query}%'))
+        else:  # default to nama
+            query = query.filter(Dokter.nama.ilike(f'%{search_query}%'))
+    
+    # Apply specialization filter
+    if spesialis_filter:
+        query = query.filter(Dokter.spesialis.ilike(f'%{spesialis_filter}%'))
+    
+    # Sort by name
+    daftar_dokter = query.order_by(Dokter.nama).all()
+    
+    # Get all unique specializations for category buttons
+    all_specializations = db.session.query(Dokter.spesialis).distinct().order_by(Dokter.spesialis).all()
+    specializations = [spec[0] for spec in all_specializations]
+    
+    return render_template("jadwal.html", dokter=daftar_dokter, search_query=search_query, search_type=search_type, spesialis_filter=spesialis_filter, specializations=specializations)
 
 @app.route("/tambah_dokter", methods=['GET', 'POST'])
 @login_required
@@ -304,6 +352,19 @@ def tambah_dokter():
         nama = request.form.get('nama')
         spesialis = request.form.get('spesialis')
         jadwal = request.form.get('jadwal')
+        
+        # Validate phone number in jadwal (should contain phone number)
+        import re
+        # Extract phone numbers from jadwal text
+        phone_numbers = re.findall(r'\d+', jadwal)
+        for phone in phone_numbers:
+            if len(phone) >= 8:  # Only validate if it looks like a phone number
+                if not (8 <= len(phone) <= 15):
+                    flash('Nomor telepon harus memiliki panjang 8-15 digit!', 'warning')
+                    return redirect(url_for('tambah_dokter'))
+                if not phone.isdigit():
+                    flash('Nomor telepon harus berupa angka!', 'warning')
+                    return redirect(url_for('tambah_dokter'))
         
         # Handle image - check both inputs
         foto_path = None
@@ -394,11 +455,31 @@ def hapus_dokter(id):
 @app.route("/buat_janji", methods=['GET', 'POST'])
 def buat_janji():
     if request.method == 'POST':
-        nama_pasien = request.form.get('nama_pasien')
+        nama_pasien = request.form.get('nama_pasien')           
         no_hp = request.form.get('no_hp')
         keluhan = request.form.get('keluhan')
         dokter_id = request.form.get('dokter_id')
         tanggal = request.form.get('tanggal')
+        
+        # Validate phone number
+        if not no_hp.isdigit():
+            flash('Nomor HP harus berupa angka!', 'warning')
+            return redirect(url_for('buat_janji'))
+        if not (8 <= len(no_hp) <= 15):
+            flash('Nomor HP harus memiliki panjang 8-15 digit!', 'warning')
+            return redirect(url_for('buat_janji'))
+        
+        # Validate appointment date (can't be in the past)
+        try:
+            from datetime import date
+            appointment_date = datetime.strptime(tanggal, '%Y-%m-%d').date()
+            today = date.today()
+            if appointment_date < today:
+                flash('Tidak dapat membuat janji untuk tanggal yang sudah lewat!', 'warning')
+                return redirect(url_for('buat_janji'))
+        except ValueError:
+            flash('Format tanggal tidak valid!', 'warning')
+            return redirect(url_for('buat_janji'))
         
         janji_baru = JanjiTemu(
             nama_pasien=nama_pasien, 
@@ -758,11 +839,22 @@ Tugasmu:
 Jawab dalam Bahasa Indonesia dengan ramah dan singkat (maksimal 3-4 kalimat).
 
 JIKA USER BERTANYA TENTANG:
-Dokter mata atau spesialis mata, jawab: dokter mata : DR.Wahyu Triyanto, Sp.M
-Dokter gigi atau spesialis gigi, jawab: dokter gigi : DRg. Indah Lestari, Sp.KG
-Dokter anak atau spesialis anak, jawab: dokter anak : DR. Siti Nurjanah, Sp.A
-Dokter jantung atau spesialis jantung, jawab: dokter jantung : DR. Budi Santoso, Sp.JP
-Dokter kulit atau spesialis kulit, jawab: dokter kulit : DR. Rina Marlina, Sp.KK
+Dokter gigi/konservasi gigi, jawab: drg. Rena Mayasari, Sp.KG (Spesialis: Konservasi Gigi, Jadwal: Senin, Rabu, Jumat | 07.30-10.00 Selasa & Kamis | 08.00-11.30)
+Dokter radiologi, jawab: dr. Ardianto Pramono, Sp.Rad(K) RI (Spesialis: Radiologi Intervensi, Jadwal: Senin-Jumat | 09.00-14.00) atau dr. Paulus Stefanus D, Sp.Rad (K) RI (Jadwal: Senin-Jumat | 09.00-14.00) atau dr. Eko Tjahyo, Sp.Rad (Jadwal: Senin-Rabu | 08.00-12.00)
+Dokter kesehatan jiwa/psikiatri, jawab: dr. Ibrahim Nasrul F, Sp.Kj, M.Biomed (Spesialis: Kesehatan Jiwa, Jadwal: Senin | 16.00-18.00) atau dr. Retno Pudjiastuti, Sp.Kj (Jadwal: Senin,Jumat | 09.00-12.00)
+Dokter orthopedi, jawab: dr. Kurniawan, Sp.OT., (K) Hip and Knee (Spesialis: Orthopedi, Jadwal: Senin | 08.00-11.00 | Selasa-Rabu | 08.00-11.00 | 14.00-16.00 | Kamis-Jumat | 09.00-11.00) atau dr. Wahyu Purnomo, Sp.OT (Jadwal: Senin | 15.00-18.00 | Kamis-Sabtu | 07.00-09.00)
+Dokter penyakit dalam, jawab: Dr. dr. Teky Widyarini, Sp.PD, FINASIM (Spesialis: Penyakit Dalam, Jadwal: Senin-Jumat | 08.00-14.00) atau dr. Ega Caesaria P P, Sp.PD (Jadwal: Senin-Jumat | 17.00-19.00 | Sabtu | 09.00-10.00) atau dr. Anindita Himawan, Sp.PD, FINASIM (Jadwal: Senin & Kamis | 15.00-17.00 | Selasa & Rabu | 14.30-15.30 | Jumat | 12.30-13.30 | Sabtu | 07.00-09.00)
+Dokter kulit/dermatologi, jawab: dr. Ambar Aliwardani, Sp.DV (Spesialis: Kulit Kelamin, Jadwal: Selasa | 13.00 - Selesai)
+Dokter jantung, jawab: dr. Aldino Satrio A, Sp.JP (Spesialis: Jantung, Jadwal: Senin, Rabu, Jumat | 07.00-12.00  Selasa, Kamis | 09.00-12.00)
+Dokter paru, jawab: dr. Briggita, Sp.P (Spesialis: Paru, Jadwal: Senin | 15.00 - 16.00 | Rabu | 13.00-14.00) atau dr. Anita Muntafi'ah, Sp.P,M.Kes (Jadwal: Selasa, Kamis | 16.00-18.00)
+Dokter THT, jawab: dr. Muh. Dody H, Sp.THT-KL (Spesialis: THT, Jadwal: Senin, Rabu, Jumat 16.00-17.30)
+Dokter geriatri, jawab: Dr. dr. Teky Widyarini, Sp.PD, FINASIM (Spesialis: Geriatri, Jadwal: Jumat | 07.00-09.00)
+Dokter mata, jawab: dr. Wahyu Triyanto, Sp.M (Spesialis: Mata, Jadwal: Senin-Jumat | 08.30-13.00)
+Dokter saraf/neurologi, jawab: dr.Indriany Widhowaty, Sp.S.,Sp.AK (Spesialis: Saraf, Jadwal: Senin, Rabu, Jumat | 11.00-13.00) atau dr. Aria Chandra GTS, SP.S., M.Kes (Jadwal: Selasa-Kamis | 13.00-Selesai | Jumat | 12.30-Selesai) atau dr. Antun Subono, Sp.N.,M.Sc (Jadwal: Senin, Rabu, Jumat | 07.00-10.00 Selasa & Kamis | 07.00-11.00)
+Dokter kandungan/obstetri, jawab: dr. Lidia W, M.Biomed, Sp.OG (Spesialis: Obsygn, Jadwal: Selasa-Jumat | 10.00-12.00) atau dr. Dewi Anggarawati, Sp.OG (Jadwal: Senin-Jumat | 11.00-13.00) atau dr. Faika Oesmania, Sp.OG (Jadwal: Senin-Jumat | 07.00-10.00) atau Dr. dr. Supriyadi, Sp.OG, Subs. Obsginsos (Jadwal: Senin, Rabu, Jumat | 18.00-20.00)
+Dokter rehabilitasi medis, jawab: dr. Go Linda Sugiarto, Sp.KFR (Spesialis: Rehabilitasi Medis, Jadwal: Selasa, Kamis | 16.00-20.00 | Sabtu | 08.00-13.00)
+Dokter bedah/surgery, jawab: dr. Riono, Sp.B (Spesialis: Bedah, Jadwal: Kamis | 13.00-Selesai | Sabtu | 08.00-Selesai) atau dr. Damar Aryo, Sp.B., FINACS (Jadwal: Senin, Rabu, Jumat | 09.0-11.30) atau dr. Hermawan, Sp.B, M.Kes (Jadwal: Senin, Rabu, Jumat | 13.00-15.00) atau dr. Ridwan Mataram, M.Si.Med., Sp.B (Jadwal: Selasa | 07.00-14.00 | Kamis | 07.00-12.00)
+Dokter anak/pediatri, jawab: dr. Isri Muninggar, Sp.A (Spesialis: Anak, Jadwal: Senin-Jumat | 09.00-11.00) atau dr. Ani Suryanti, Sp.A.,M.Kes (Jadwal: Selasa, Kamis | 12.00-Selesai) atau dr. Fatimah Mayasyari, Sp.A (Jadwal: Senin, Rabu, Jumat | 07.00-08.00 Sabtu | 08.00-09.00)
 """
 
         # Call OpenRouter API
@@ -773,7 +865,7 @@ Dokter kulit atau spesialis kulit, jawab: dokter kulit : DR. Rina Marlina, Sp.KK
                 "Content-Type": "application/json"
             },
             json={
-                "model": "tngtech/deepseek-r1t2-chimera:free",
+                "model": "arcee-ai/trinity-large-preview:free",
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
@@ -800,8 +892,13 @@ def login():
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
-            login_user(user)
-            return redirect(url_for('index'))
+            if user.status == 'pending':
+                flash('Akun Anda menunggu persetujuan admin.', 'warning')
+            elif user.status == 'rejected':
+                flash('Akun Anda telah ditolak oleh admin.', 'danger')
+            elif user.status == 'approved':
+                login_user(user)
+                return redirect(url_for('index'))
         else:
             flash('Login Gagal. Cek username dan password.', 'danger')
     return render_template("login.html")
@@ -814,10 +911,10 @@ def register():
         if User.query.filter_by(username=username).first():
             flash('Username sudah ada.', 'warning')
         else:
-            new_user = User(username=username, password=generate_password_hash(password, method='pbkdf2:sha256'))
+            new_user = User(username=username, password=generate_password_hash(password, method='pbkdf2:sha256'), status='pending')
             db.session.add(new_user)
             db.session.commit()
-            flash('Akun berhasil dibuat! Silakan login.', 'success')
+            flash('Akun berhasil dibuat! Menunggu persetujuan admin untuk login.', 'success')
             return redirect(url_for('login'))
     return render_template("register.html")
 
@@ -867,86 +964,179 @@ def delete_category(id):
     flash(f'Kategori "{category.name}" berhasil dihapus!', 'success')
     return redirect(url_for('manage_categories'))
 
+# ================= ADMIN ROUTES =================
+
+@app.route("/admin/login", methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        admin = Admin.query.filter_by(username=username).first()
+        if admin and check_password_hash(admin.password, password):
+            login_user(admin)
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Login Admin Gagal. Cek username dan password.', 'danger')
+    return render_template("admin_login.html")
+
+@app.route("/admin/dashboard")
+@login_required
+def admin_dashboard():
+    # Check if current user is admin
+    if not isinstance(current_user, Admin):
+        flash('Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get all pending users
+    pending_users = User.query.filter_by(status='pending').all()
+    approved_users = User.query.filter_by(status='approved').all()
+    rejected_users = User.query.filter_by(status='rejected').all()
+    
+    return render_template("admin_dashboard.html", 
+                         pending_users=pending_users,
+                         approved_users=approved_users,
+                         rejected_users=rejected_users)
+
+@app.route("/admin/approve_user/<int:user_id>")
+@login_required
+def approve_user(user_id):
+    # Check if current user is admin
+    if not isinstance(current_user, Admin):
+        flash('Akses ditolak. Hanya admin yang dapat melakukan aksi ini.', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    user.status = 'approved'
+    db.session.commit()
+    flash(f'User {user.username} telah disetujui!', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route("/admin/reject_user/<int:user_id>")
+@login_required
+def reject_user(user_id):
+    # Check if current user is admin
+    if not isinstance(current_user, Admin):
+        flash('Akses ditolak. Hanya admin yang dapat melakukan aksi ini.', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    user.status = 'rejected'
+    db.session.commit()
+    flash(f'User {user.username} telah ditolak!', 'warning')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route("/admin/logout")
+@login_required
+def admin_logout():
+    logout_user()
+    flash('Anda telah logout.', 'info')
+    return redirect(url_for('admin_login'))
+
+# ================= DATABASE INITIALIZATION =================
+
 def init_db():
     with app.app_context():
+        # Create tables if they don't exist (idempotent operation)
         db.create_all()
         
+        # Create Admin Account (only one, if doesn't exist)
+        try:
+            if not Admin.query.first():
+                admin = Admin(
+                    username='slametriyadi',
+                    password=generate_password_hash('surka13rs', method='pbkdf2:sha256')
+                )
+                db.session.add(admin)
+                db.session.commit()
+                print("[SUCCESS] Admin account berhasil dibuat! Username: slametriyadi")
+        except Exception as e:
+            db.session.rollback()
+            # Admin already exists, which is fine
+        
         # Seed Data untuk Gallery (jika kosong)
-        if not Gallery.query.first():
-            # Gallery 1: Fasilitas Rumah Sakit
-            gallery1 = Gallery(
-                title="Fasilitas Rumah Sakit",
-                main_image="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800"
-            )
-            db.session.add(gallery1)
-            db.session.flush()
+        try:
+            if not Gallery.query.first():
+                # Gallery 1: Fasilitas Rumah Sakit
+                gallery1 = Gallery(
+                    title="Fasilitas Rumah Sakit",
+                    main_image="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800"
+                )
+                db.session.add(gallery1)
+                db.session.flush()
+                
+                images1 = [
+                    GalleryImage(subtitle="Ruang IGD Modern", image_url="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600", gallery_id=gallery1.id),
+                    GalleryImage(subtitle="Ruang Rawat Inap", image_url="https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=600", gallery_id=gallery1.id),
+                    GalleryImage(subtitle="Laboratorium", image_url="https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=600", gallery_id=gallery1.id),
+                    GalleryImage(subtitle="Apotek", image_url="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600", gallery_id=gallery1.id),
+                ]
+                db.session.add_all(images1)
+                
+                # Gallery 2: Kegiatan Sosial
+                gallery2 = Gallery(
+                    title="Kegiatan Sosial & Bakti Kesehatan",
+                    main_image="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800"
+                )
+                db.session.add(gallery2)
+                db.session.flush()
+                
+                images2 = [
+                    GalleryImage(subtitle="Pemeriksaan Gratis", image_url="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600", gallery_id=gallery2.id),
+                    GalleryImage(subtitle="Donor Darah", image_url="https://images.unsplash.com/photo-1615461066841-6116e61058f4?w=600", gallery_id=gallery2.id),
+                    GalleryImage(subtitle="Edukasi Kesehatan", image_url="https://images.unsplash.com/photo-1576765608866-5b51046452be?w=600", gallery_id=gallery2.id),
+                ]
+                db.session.add_all(images2)
+                
+                # Gallery 3: Tim Medis
+                gallery3 = Gallery(
+                    title="Tim Medis Profesional",
+                    main_image="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800"
+                )
+                db.session.add(gallery3)
+                db.session.flush()
+                
+                images3 = [
+                    GalleryImage(subtitle="Tim Dokter Spesialis", image_url="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600", gallery_id=gallery3.id),
+                    GalleryImage(subtitle="Perawat Profesional", image_url="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600", gallery_id=gallery3.id),
+                    GalleryImage(subtitle="Tenaga Medis Berpengalaman", image_url="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600", gallery_id=gallery3.id),
+                ]
+                db.session.add_all(images3)
             
-            images1 = [
-                GalleryImage(subtitle="Ruang IGD Modern", image_url="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600", gallery_id=gallery1.id),
-                GalleryImage(subtitle="Ruang Rawat Inap", image_url="https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=600", gallery_id=gallery1.id),
-                GalleryImage(subtitle="Laboratorium", image_url="https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=600", gallery_id=gallery1.id),
-                GalleryImage(subtitle="Apotek", image_url="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600", gallery_id=gallery1.id),
-            ]
-            db.session.add_all(images1)
-            
-            # Gallery 2: Kegiatan Sosial
-            gallery2 = Gallery(
-                title="Kegiatan Sosial & Bakti Kesehatan",
-                main_image="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800"
-            )
-            db.session.add(gallery2)
-            db.session.flush()
-            
-            images2 = [
-                GalleryImage(subtitle="Pemeriksaan Gratis", image_url="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600", gallery_id=gallery2.id),
-                GalleryImage(subtitle="Donor Darah", image_url="https://images.unsplash.com/photo-1615461066841-6116e61058f4?w=600", gallery_id=gallery2.id),
-                GalleryImage(subtitle="Edukasi Kesehatan", image_url="https://images.unsplash.com/photo-1576765608866-5b51046452be?w=600", gallery_id=gallery2.id),
-            ]
-            db.session.add_all(images2)
-            
-            # Gallery 3: Tim Medis
-            gallery3 = Gallery(
-                title="Tim Medis Profesional",
-                main_image="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800"
-            )
-            db.session.add(gallery3)
-            db.session.flush()
-            
-            images3 = [
-                GalleryImage(subtitle="Tim Dokter Spesialis", image_url="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600", gallery_id=gallery3.id),
-                GalleryImage(subtitle="Perawat Profesional", image_url="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600", gallery_id=gallery3.id),
-                GalleryImage(subtitle="Tenaga Medis Berpengalaman", image_url="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600", gallery_id=gallery3.id),
-            ]
-            db.session.add_all(images3)
-            
-            db.session.commit()
-            print("✅ Gallery seed data berhasil ditambahkan!")
+                db.session.commit()
+                print("[SUCCESS] Gallery seed data berhasil ditambahkan!")
+        except Exception as e:
+            db.session.rollback()
+            # Gallery data already exists, which is fine
         
         # Seed Data untuk Video (jika kosong)
-        if not Video.query.first():
-            videos = [
-                Video(
-                    title="Profil RST Slamet Riyadi",
-                    description="Video profil rumah sakit dan fasilitas yang tersedia",
-                    video_url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                    thumbnail_url="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600"
-                ),
-                Video(
-                    title="Protokol Kesehatan di RST Slamet Riyadi",
-                    description="Panduan protokol kesehatan untuk pasien dan pengunjung",
-                    video_url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                    thumbnail_url="https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=600"
-                ),
-                Video(
-                    title="Bakti Sosial Kesehatan 2026",
-                    description="Dokumentasi kegiatan bakti sosial pemeriksaan kesehatan gratis",
-                    video_url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                    thumbnail_url="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600"
-                ),
-            ]
-            db.session.add_all(videos)
-            db.session.commit()
-            print("✅ Video seed data berhasil ditambahkan!")
+        try:
+            if not Video.query.first():
+                videos = [
+                    Video(
+                        title="Profil RST Slamet Riyadi",
+                        description="Video profil rumah sakit dan fasilitas yang tersedia",
+                        video_url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                        thumbnail_url="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600"
+                    ),
+                    Video(
+                        title="Protokol Kesehatan di RST Slamet Riyadi",
+                        description="Panduan protokol kesehatan untuk pasien dan pengunjung",
+                        video_url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                        thumbnail_url="https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=600"
+                    ),
+                    Video(
+                        title="Bakti Sosial Kesehatan 2026",
+                        description="Dokumentasi kegiatan bakti sosial pemeriksaan kesehatan gratis",
+                        video_url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                        thumbnail_url="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600"
+                    ),
+                ]
+                db.session.add_all(videos)
+                db.session.commit()
+                print("[SUCCESS] Video seed data berhasil ditambahkan!")
+        except Exception as e:
+            db.session.rollback()
+            # Video data already exists, which is fine
 
 if __name__ == "__main__":
     init_db()
