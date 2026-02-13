@@ -313,6 +313,80 @@ def tambah_berita():
     categories = Category.query.order_by(Category.name).all()
     return render_template("tambah_berita.html", categories=categories)
 
+@app.route("/edit_berita/<int:id>", methods=['GET', 'POST'])
+@login_required
+def edit_berita(id):
+    berita_item = Berita.query.get_or_404(id)
+
+    if request.method == 'POST':
+        judul = request.form.get('judul')
+        konten = request.form.get('konten')
+        category_id = request.form.get('category_id')
+        new_category = request.form.get('new_category', '').strip()
+
+        # Handle new category creation
+        if new_category:
+            slug = new_category.lower().replace(' ', '-')
+            existing = Category.query.filter_by(slug=slug).first()
+            if existing:
+                category_id = existing.id
+            else:
+                new_cat = Category(name=new_category, slug=slug)
+                db.session.add(new_cat)
+                db.session.flush()
+                category_id = new_cat.id
+
+        # Handle image - check both inputs
+        new_gambar = None
+        has_file = 'gambar_file' in request.files and request.files['gambar_file'].filename != ''
+        has_url = request.form.get('gambar_url', '').strip() != ''
+
+        # Validation: only one method allowed
+        if has_file and has_url:
+            flash('Pilih hanya satu: Upload file ATAU masukkan URL, bukan keduanya!', 'warning')
+            return redirect(url_for('edit_berita', id=id))
+
+        if has_file:
+            file = request.files['gambar_file']
+            new_gambar = save_image(file, folder='berita')
+            if not new_gambar:
+                flash('Format gambar tidak valid. Gunakan PNG, JPG, atau JPEG (max 5MB)', 'warning')
+                return redirect(url_for('edit_berita', id=id))
+        elif has_url:
+            new_gambar = request.form.get('gambar_url')
+
+        # Update fields
+        berita_item.judul = judul
+        berita_item.konten = konten
+        berita_item.category_id = int(category_id) if category_id else None
+
+        if new_gambar:
+            if berita_item.gambar and not berita_item.gambar.startswith('http'):
+                delete_image(berita_item.gambar)
+            berita_item.gambar = new_gambar
+
+        db.session.commit()
+        flash('Berita berhasil diperbarui!', 'success')
+        return redirect(url_for('detail_berita', id=id))
+
+    categories = Category.query.order_by(Category.name).all()
+    return render_template("edit_berita.html", berita=berita_item, categories=categories)
+
+@app.route("/hapus_berita/<int:id>", methods=['POST'])
+@login_required
+def hapus_berita(id):
+    berita_item = Berita.query.get_or_404(id)
+
+    Komentar.query.filter_by(berita_id=id).delete()
+
+    if berita_item.gambar and not berita_item.gambar.startswith('http'):
+        delete_image(berita_item.gambar)
+
+    db.session.delete(berita_item)
+    db.session.commit()
+    flash('Berita berhasil dihapus!', 'success')
+    return redirect(url_for('berita_acara'))
+
 # --- DOKTER & JANJI TEMU ---
 
 @app.route("/jadwal_dokter")

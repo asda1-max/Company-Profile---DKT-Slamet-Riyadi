@@ -19,6 +19,16 @@
             {% endif %}
             <div class="p-8">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ berita.judul }}</h1>
+                {% if current_user.is_authenticated %}
+                <div class="mb-4 flex gap-2">
+                    <a href="{{ url_for('edit_berita', id=berita.id) }}" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition">
+                        Edit
+                    </a>
+                    <button type="button" onclick="confirmDeleteBerita({{ berita.id }}, '{{ berita.judul }}')" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white bg-red-600 hover:bg-red-700 transition">
+                        Hapus
+                    </button>
+                </div>
+                {% endif %}
                 <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-8 border-b border-gray-100 dark:border-gray-700 pb-4">
                     <time>{{ berita.tanggal.strftime('%d %B %Y') }}</time>
                     <span>&bull;</span>
@@ -62,4 +72,72 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteBeritaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 border border-gray-200 dark:border-gray-700 reveal">
+        <button onclick="closeDeleteBeritaModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <div class="p-8 text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-red-600 dark:text-red-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Konfirmasi Hapus</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+                Apakah anda yakin ingin menghapus berita <span id="beritaTitle" class="font-semibold text-gray-900 dark:text-white"></span>?
+            </p>
+
+            <div class="flex gap-3">
+                <button onclick="closeDeleteBeritaModal()" class="flex-1 rounded-lg bg-gray-200 dark:bg-gray-700 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                    Tidak
+                </button>
+                <button onclick="confirmDeleteBeritaAction()" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition shadow-lg">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pendingDeleteBeritaId = null;
+
+    function confirmDeleteBerita(beritaId, beritaTitle) {
+        pendingDeleteBeritaId = beritaId;
+        document.getElementById('beritaTitle').textContent = beritaTitle;
+        const modal = document.getElementById('deleteBeritaModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteBeritaModal() {
+        const modal = document.getElementById('deleteBeritaModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        pendingDeleteBeritaId = null;
+    }
+
+    function confirmDeleteBeritaAction() {
+        if (pendingDeleteBeritaId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/hapus_berita/' + pendingDeleteBeritaId;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    document.getElementById('deleteBeritaModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteBeritaModal();
+        }
+    });
+</script>
 {% endblock %}
